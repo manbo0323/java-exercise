@@ -28,10 +28,10 @@ public class Exercise {
         // Input: “(1 +) * 3” will raise an Exception
         // Please put your code here
 
-        return cal(expr).intValue();
+        return calculate(expr).intValue();
     }
 
-    private static BigDecimal cal(String str) throws NumberFormatException {
+    private static BigDecimal calculate(String str) throws NumberFormatException {
         if (StringUtils.isBlank(str)) {
             throw new NumberFormatException("invalid arithmetic expression");
         }
@@ -42,54 +42,53 @@ public class Exercise {
         int index = str.lastIndexOf(OPEN_PARENTHESIS);
         if (index >= 0) {
             int rightIndex = str.indexOf(CLOSE_PARENTHESIS, index);
-
-
             String left = str.substring(0, index);
             String right = "";
             if (rightIndex + 1 < str.length()) {
                 right = str.substring(rightIndex + 1);
             }
 
-            BigDecimal middle = cal(str.substring(index + 1, rightIndex));
-            return cal(left + middle + right);
+            BigDecimal middle = calculate(str.substring(index + 1, rightIndex));
+            return calculate(left + middle + right);
         }
 
         // operator = "+";
         index = str.lastIndexOf(PLUS);
         if (index > 0) {
-            BigDecimal left = cal(str.substring(0, index));
-            BigDecimal right = cal(str.substring(index + 1));
+            BigDecimal left = calculate(str.substring(0, index));
+            BigDecimal right = calculate(str.substring(index + 1));
             return left.add(right);
         }
 
         // operator = "-";
         index = str.lastIndexOf(MINUS);
-        if (index == 0) { // 負數處理
-            BigDecimal result = cal(str.substring(index + 1));
-            if (result.compareTo(new BigDecimal("0")) < 0) { // 小於0
-                return result.abs(); // 絕對值
+        if (index == 0) {
+            // handle negative number
+            BigDecimal result = calculate(str.substring(index + 1));
+            if (result.compareTo(new BigDecimal("0")) < 0) {
+                return result.abs();
             } else {
-                return result.negate(); // 相反數
+                return result.negate();
             }
         } else if (index > 0) {
-            BigDecimal left = cal(str.substring(0, index));
-            BigDecimal right = cal(str.substring(index + 1));
+            BigDecimal left = calculate(str.substring(0, index));
+            BigDecimal right = calculate(str.substring(index + 1));
             return left.subtract(right);
         }
 
         // operator = "*";
         index = str.lastIndexOf(MULTIPLY);
         if (index > 0) {
-            BigDecimal left = cal(str.substring(0, index));
-            BigDecimal right = cal(str.substring(index + 1));
+            BigDecimal left = calculate(str.substring(0, index));
+            BigDecimal right = calculate(str.substring(index + 1));
             return left.multiply(right);
         }
 
         // operator = "/";
         index = str.lastIndexOf(DIVIDED);
         if (index > 0) {
-            BigDecimal left = cal(str.substring(0, index));
-            BigDecimal right = cal(str.substring(index + 1));
+            BigDecimal left = calculate(str.substring(0, index));
+            BigDecimal right = calculate(str.substring(index + 1));
             return left.divide(right, BigDecimal.ROUND_DOWN);
         }
 
