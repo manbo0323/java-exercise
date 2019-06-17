@@ -1,6 +1,5 @@
 package com.manbo.exercise;
 
-import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -19,7 +18,7 @@ public class Exercise {
     private final static String DIVIDED = "/";
 
     public static void main(String[] args) {
-        System.out.println(arithmetic(args[0]));
+        System.out.println(arithmetic("5 * (2 + 3) "));
     }
 
     private static Integer arithmetic(String expr) {
@@ -31,70 +30,76 @@ public class Exercise {
         return calculate(expr).intValue();
     }
 
-    private static BigDecimal calculate(String str) throws NumberFormatException {
-        if (StringUtils.isBlank(str)) {
+
+    /**
+     * implement calculate by using recursive
+     *
+     * @throws NumberFormatException if expression is not a valid representation of a BigDecimal.
+     **/
+    private static BigDecimal calculate(String expression) {
+        if (expression == null || "".equals(expression)) {
             throw new NumberFormatException("invalid arithmetic expression");
         }
 
-        str = StringUtils.deleteWhitespace(str);
+        expression = expression.replaceAll(" ", "");
 
         // handle parenthesis
-        int index = str.lastIndexOf(OPEN_PARENTHESIS);
+        int index = expression.lastIndexOf(OPEN_PARENTHESIS);
         if (index >= 0) {
-            int rightIndex = str.indexOf(CLOSE_PARENTHESIS, index);
-            String left = str.substring(0, index);
+            int rightIndex = expression.indexOf(CLOSE_PARENTHESIS, index);
+            String left = expression.substring(0, index);
             String right = "";
-            if (rightIndex + 1 < str.length()) {
-                right = str.substring(rightIndex + 1);
+            if (rightIndex + 1 < expression.length()) {
+                right = expression.substring(rightIndex + 1);
             }
 
-            BigDecimal middle = calculate(str.substring(index + 1, rightIndex));
+            BigDecimal middle = calculate(expression.substring(index + 1, rightIndex));
             return calculate(left + middle + right);
         }
 
         // operator = "+";
-        index = str.lastIndexOf(PLUS);
+        index = expression.lastIndexOf(PLUS);
         if (index > 0) {
-            BigDecimal left = calculate(str.substring(0, index));
-            BigDecimal right = calculate(str.substring(index + 1));
+            BigDecimal left = calculate(expression.substring(0, index));
+            BigDecimal right = calculate(expression.substring(index + 1));
             return left.add(right);
         }
 
         // operator = "-";
-        index = str.lastIndexOf(MINUS);
+        index = expression.lastIndexOf(MINUS);
         if (index == 0) {
             // handle negative number
-            BigDecimal result = calculate(str.substring(index + 1));
+            BigDecimal result = calculate(expression.substring(index + 1));
             if (result.compareTo(new BigDecimal("0")) < 0) {
                 return result.abs();
             } else {
                 return result.negate();
             }
         } else if (index > 0) {
-            BigDecimal left = calculate(str.substring(0, index));
-            BigDecimal right = calculate(str.substring(index + 1));
+            BigDecimal left = calculate(expression.substring(0, index));
+            BigDecimal right = calculate(expression.substring(index + 1));
             return left.subtract(right);
         }
 
         // operator = "*";
-        index = str.lastIndexOf(MULTIPLY);
+        index = expression.lastIndexOf(MULTIPLY);
         if (index > 0) {
-            BigDecimal left = calculate(str.substring(0, index));
-            BigDecimal right = calculate(str.substring(index + 1));
+            BigDecimal left = calculate(expression.substring(0, index));
+            BigDecimal right = calculate(expression.substring(index + 1));
             return left.multiply(right);
         }
 
         // operator = "/";
-        index = str.lastIndexOf(DIVIDED);
+        index = expression.lastIndexOf(DIVIDED);
         if (index > 0) {
-            BigDecimal left = calculate(str.substring(0, index));
-            BigDecimal right = calculate(str.substring(index + 1));
+            BigDecimal left = calculate(expression.substring(0, index));
+            BigDecimal right = calculate(expression.substring(index + 1));
             return left.divide(right, BigDecimal.ROUND_DOWN);
         }
 
         BigDecimal num;
         try {
-            num = new BigDecimal(str);
+            num = new BigDecimal(expression);
         } catch (NumberFormatException e) {
             throw new NumberFormatException("invalid arithmetic expression");
         }
